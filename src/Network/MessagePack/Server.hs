@@ -25,11 +25,11 @@ import           Control.Monad.Trans.Control      (MonadBaseControl)
 
 import           Network.MessagePack.Protocol     (protocolMethods)
 import           Network.MessagePack.Server.Basic
-
+import Control.Monad.IO.Unlift
 
 -- | Start RPC server with a set of RPC methods.
 runServer
-  :: (MonadBaseControl IO m, MonadIO m, MonadCatch m)
+  :: (MonadBaseControl IO m, MonadIO m, MonadCatch m, MonadUnliftIO m)
   => Int        -- ^ Port number
   -> [Method m] -- ^ list of methods
   -> m ()

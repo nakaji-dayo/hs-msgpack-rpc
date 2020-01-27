@@ -62,7 +62,7 @@ import           Control.Monad.Trans                    (MonadIO, MonadTrans,
 import           Control.Monad.Trans.Control            (MonadBaseControl)
 import qualified Data.Binary                            as Binary
 import qualified Data.ByteString                        as S
-import           Data.Conduit                           (ResumableSource, Sink,
+import           Data.Conduit                           (SealedConduitT, Sink,
                                                          ($$), ($$+), ($$++))
 import qualified Data.Conduit.Binary                    as CB
 import           Data.Conduit.Network                   (appSink, appSource,
@@ -85,6 +85,7 @@ import           Network.MessagePack.Interface.Internal (IsReturnType (..),
                                                          Returns)
 import           Network.MessagePack.Types
 
+import Control.Monad.IO.Unlift
 
 newtype ServerT m a = ServerT { runServerT :: m a }
   deriving (Functor, Applicative, Monad, MonadIO)
@@ -129,7 +130,7 @@ instance MonadIO m => IsReturnTypeIO m (Returns r) where
 processRequests
   :: (Applicative m, MonadThrow m, MonadCatch m)
   => [Method m]
-  -> ResumableSource m S.ByteString
+  -> SealedConduitT () S.ByteString m ()
   -> Sink S.ByteString m t
   -> m b
 processRequests methods rsrc sink = do
@@ -191,7 +192,7 @@ ignoreParseError _ = pure ()
 
 -- | Start RPC server with a set of RPC methods.
 serve
-  :: (MonadBaseControl IO m, MonadIO m, MonadCatch m)
+  :: (MonadBaseControl IO m, MonadIO m, MonadCatch m, MonadUnliftIO m)
   => Int        -- ^ Port number
   -> [Method m] -- ^ list of methods
   -> m ()

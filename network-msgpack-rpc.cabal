@@ -53,7 +53,7 @@ library
     , binary
     , binary-conduit
     , bytestring
-    , conduit                           <= 1.2.13
+    , conduit                           <= 1.4
     , conduit-extra
     , data-default-class
     , data-default-instances-base
@@ -65,6 +65,7 @@ library
     , network
     , tagged
     , text
+    , unliftio-core
 
 test-suite testsuite
   type: exitcode-stdio-1.0

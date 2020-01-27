@@ -13,7 +13,7 @@ import           Control.Monad.Catch                    (MonadCatch, MonadThrow,
 import qualified Control.Monad.State.Strict             as CMS
 import qualified Data.Binary                            as Binary
 import qualified Data.ByteString                        as S
-import           Data.Conduit                           (ResumableSource, Sink,
+import           Data.Conduit                           (SealedConduitT, Sink,
                                                          ($$), ($$++))
 import qualified Data.Conduit.Binary                    as CB
 import           Data.Conduit.Serialization.Binary      (sinkGet)
@@ -33,7 +33,7 @@ import           Network.MessagePack.Types.Spec
 
 -- | RPC connection type
 data Connection m = Connection
-  { connSource :: !(ResumableSource m S.ByteString)
+  { connSource :: !(SealedConduitT () S.ByteString m ())
   , connSink   :: !(Sink S.ByteString m ())
   , connMsgId  :: !Int
   , connMths   :: ![Text]
